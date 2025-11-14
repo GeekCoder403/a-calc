@@ -26,6 +26,7 @@
         box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
         margin-left: auto;
         margin-right: auto;
+        margin-bottom: 20px;
       }
       input,
       button {
@@ -34,7 +35,7 @@
         width: 100%;
         box-sizing: border-box;
         background-color: #444;
-        color: #fff;
+        color: white;
       }
       button {
         background-color: rgba(10, 255, 50, 0.6);
@@ -46,7 +47,7 @@
       button:hover {
         background-color: rgba(10, 255, 50, 0.7);
       }
-      #result {
+      #result, #result2, #result3, #result4 {
         margin-top: 20px;
         padding: 10px;
         background-color: rgba(10, 255, 50, 0.3);
@@ -75,15 +76,54 @@
     </style>
   </head>
   <body>
+    <!-- Section 1: Calculate a -->
     <div class="container">
       <h2>Calcule du <span class="math">a</span></h2>
       <label for="vertex">Sommet:</label>
-      <input type="text" id="vertex" placeholder="(x, y)" /><br />
+      <input type="text" id="vertex" placeholder="(h, k)" /><br />
       <label for="point">Point:</label>
       <input type="text" id="point" placeholder="(x, y)" /><br />
-      <button onclick="calculate()">Calculer</button>
+      <button onclick="calculateA()">Calculer</button>
       <div id="result"></div>
     </div>
+
+    <!-- Section 2: Calculate Vertex -->
+    <div class="container">
+      <h2>Calcule du sommet <span class="math">(h, k)</span></h2>
+      <label for="point2">Point:</label>
+      <input type="text" id="point2" placeholder="(x, y)" /><br />
+      <label for="a">Valeur de <span class="math">a</span>:</label>
+      <input type="text" id="a" placeholder="a" /><br />
+      <button onclick="calculateVertex()">Calculer</button>
+      <div id="result2"></div>
+    </div>
+
+    <!-- Section 3: Calculate y for a given x -->
+    <div class="container">
+      <h2>Calcule de <span class="math">y</span> pour un <span class="math">x</span> donné</h2>
+      <label for="a3">Valeur de <span class="math">a</span>:</label>
+      <input type="text" id="a3" placeholder="a" /><br />
+      <label for="hk3">Sommet <span class="math">(h, k)</span>:</label>
+      <input type="text" id="hk3" placeholder="(h, k)" /><br />
+      <label for="x3">Valeur de <span class="math">x</span>:</label>
+      <input type="text" id="x3" placeholder="x" /><br />
+      <button onclick="calculateY()">Calculer</button>
+      <div id="result3"></div>
+    </div>
+
+    <!-- Section 4: Calculate x for a given y -->
+    <div class="container">
+      <h2>Calcule de <span class="math">x</span> pour un <span class="math">y</span> donné</h2>
+      <label for="a4">Valeur de <span class="math">a</span>:</label>
+      <input type="text" id="a4" placeholder="a" /><br />
+      <label for="hk4">Sommet <span class="math">(h, k)</span>:</label>
+      <input type="text" id="hk4" placeholder="(h, k)" /><br />
+      <label for="y4">Valeur de <span class="math">y</span>:</label>
+      <input type="text" id="y4" placeholder="y" /><br />
+      <button onclick="calculateX()">Calculer</button>
+      <div id="result4"></div>
+    </div>
+
     <script>
       // Helper function to simplify a fraction
       function simplifyFraction(numerator, denominator) {
@@ -123,7 +163,7 @@
         return `<span class="fraction"><span class="numerator">${simplifiedNum}</span><span class="denominator">${simplifiedDen}</span></span>`;
       }
 
-      function calculate() {
+      function calculateA() {
         const s = document.getElementById('vertex').value;
         const p = document.getElementById('point').value;
 
@@ -169,6 +209,80 @@
           `<span class="math">a = ${aFormatted}</span>\n` +
           `<span class="math">h = ${h}</span>\n` +
           `<span class="math">k = ${k}</span>\n`;
+      }
+
+      function calculateVertex() {
+        const p = document.getElementById('point2').value;
+        const a = parseFloat(document.getElementById('a').value);
+
+        // Parse point (x, y)
+        const xy = p.replace('(', '').replace(')', '').split(',');
+        const xp = parseFloat(xy[0]);
+        const yp = parseFloat(xy[1]);
+
+        // Calculate h and k
+        const h = xp;
+        const k = yp - a * Math.pow(xp - h, 2);
+
+        // Display results
+        const resultDiv = document.getElementById('result2');
+        resultDiv.innerHTML =
+          `<span class="math">S(${h}, ${k})</span>\n` +
+          `<span class="math">h = ${h}</span>\n` +
+          `<span class="math">k = ${k}</span>\n`;
+      }
+
+      function calculateY() {
+        const a = parseFloat(document.getElementById('a3').value);
+        const hk = document.getElementById('hk3').value.replace('(', '').replace(')', '').split(',');
+        const h = parseFloat(hk[0]);
+        const k = parseFloat(hk[1]);
+        const x = parseFloat(document.getElementById('x3').value);
+
+        // Calculate y
+        const y = a * Math.pow(x - h, 2) + k;
+
+        // Format y as a fraction or decimal
+        const yFormatted = formatAsFractionOrDecimal(y);
+
+        // Display results
+        const resultDiv = document.getElementById('result3');
+        resultDiv.innerHTML =
+          `<span class="math">y = ${yFormatted}</span>\n`+
+          `<span class="math">P(${x}, ${yFormatted})</span>\n`
+      }
+
+      function calculateX() {
+        const a = parseFloat(document.getElementById('a4').value);
+        const hk = document.getElementById('hk4').value.replace('(', '').replace(')', '').split(',');
+        const h = parseFloat(hk[0]);
+        const k = parseFloat(hk[1]);
+        const y = parseFloat(document.getElementById('y4').value);
+
+        // Calculate discriminant
+        const discriminant = (y - k) / a;
+
+        // Check if discriminant is negative
+        if (discriminant < 0) {
+          const resultDiv = document.getElementById('result4');
+          resultDiv.innerHTML = `<span class="math">Pas de solution réelle pour x</span>`;
+          return;
+        }
+
+        // Calculate x
+        const x1 = h + Math.sqrt(discriminant);
+        const x2 = h - Math.sqrt(discriminant);
+
+        // Format x1 and x2 as fractions or decimals
+        const x1Formatted = formatAsFractionOrDecimal(x1);
+        const x2Formatted = formatAsFractionOrDecimal(x2);
+
+        // Display results
+        const resultDiv = document.getElementById('result4');
+        if (x1Formatted == x2Formatted) return resultDiv.innerHTML = `<span class="math">x = ${x1Formatted}</span>\n`
+        resultDiv.innerHTML =
+          `<span class="math">x₁ = ${x1Formatted}</span>\n` +
+          `<span class="math">x₂ = ${x2Formatted}</span>\n`;
       }
     </script>
   </body>
