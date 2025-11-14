@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parabola Equation Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        eruda.init();
+      });
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #232323;
+        color: #fff;
+      }
+      .container {
+        background-color: #000;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+        margin-left: auto;
+        margin-right: auto;
+      }
+      input,
+      button {
+        padding: 8px;
+        margin: 5px 0;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #444:
+      }
+      button {
+        background-color: rgba(10, 255, 50, 0.6);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bolder;
+      }
+      button:hover {
+        background-color: rgba(10, 255, 50, 0.7);
+      }
+      #result {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: rgba(10, 255, 50, 0.3);
+        border-radius: 4px;
+        white-space: pre-wrap;
+      }
+      .math {
+        font-family: 'STIX-Web', 'Asana Math', serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Calcule du <span class="math">a</span></h2>
+      <label for="vertex">Sommet:</label>
+      <input type="text" id="vertex" placeholder="(x, y)" /><br />
+      <label for="point">Point:</label>
+      <input type="text" id="point" placeholder="(x, y)" /><br />
+      <button onclick="calculate()">Calculer</button>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      function calculate() {
+        const s = document.getElementById('vertex').value;
+        const p = document.getElementById('point').value;
+
+        // Parse vertex (h, k)
+        const hk = s.replace('(', '').replace(')', '').split(',');
+        const h = parseFloat(hk[0]);
+        const k = parseFloat(hk[1]);
+
+        // Parse point (x, y)
+        const xy = p.replace('(', '').replace(')', '').split(',');
+        const xp = parseFloat(xy[0]);
+        const yp = parseFloat(xy[1]);
+
+        // Calculate a
+        const a = (yp - k) / Math.pow(xp - h, 2);
+
+        // Build the equation string
+        let xpart;
+        if (h === 0) {
+          xpart = 'x²';
+        } else if (h > 0) {
+          xpart = `(x - ${h})²`;
+        } else {
+          xpart = `(x + ${Math.abs(h)})²`;
+        }
+
+        let kend;
+        if (k === 0) {
+          kend = '';
+        } else if (k > 0) {
+          kend = ` + ${k}`;
+        } else {
+          kend = ` - ${Math.abs(k)}`;
+        }
+
+        // Display results
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML =
+          `<span class="math">y = ${a}${xpart}${kend}</span>\n` +
+          `<span class="math">a = ${a}</span>\n` +
+          `<span class="math">h = ${h}</span>\n` +
+          `<span class="math">k = ${k}</span>\n`;
+      }
+    </script>
+  </body>
+</html>
