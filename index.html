@@ -33,7 +33,8 @@
         margin: 5px 0;
         width: 100%;
         box-sizing: border-box;
-        background-color: #444:
+        background-color: #444;
+        color: #fff;
       }
       button {
         background-color: rgba(10, 255, 50, 0.6);
@@ -55,6 +56,22 @@
       .math {
         font-family: 'STIX-Web', 'Asana Math', serif;
       }
+      .fraction {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+        margin: 0 2px;
+      }
+      .fraction > .numerator {
+        border-bottom: 1px solid;
+        padding-bottom: 2px;
+        line-height: 1;
+      }
+      .fraction > .denominator {
+        line-height: 1;
+      }
     </style>
   </head>
   <body>
@@ -67,8 +84,45 @@
       <button onclick="calculate()">Calculer</button>
       <div id="result"></div>
     </div>
-
     <script>
+      // Helper function to simplify a fraction
+      function simplifyFraction(numerator, denominator) {
+        const gcd = (a, b) => b ? gcd(b, a % b) : a;
+        const commonDivisor = gcd(Math.abs(numerator), Math.abs(denominator));
+        return [numerator / commonDivisor, denominator / commonDivisor];
+      }
+
+      // Helper function to format a number as a fraction or decimal
+      function formatAsFractionOrDecimal(value) {
+        const epsilon = 1e-10;
+        const absValue = Math.abs(value);
+        if (absValue < epsilon) return "0";
+        if (Math.abs(Math.round(value) - value) < epsilon) return Math.round(value).toString();
+
+        // Try to represent as a fraction
+        const tolerance = 1.0E-6;
+        let numerator = 1;
+        let denominator = 1;
+        let bestNumerator = 1;
+        let bestDenominator = 1;
+        let bestError = Math.abs(value - numerator / denominator);
+
+        for (denominator = 1; denominator <= 10000; ++denominator) {
+          numerator = Math.round(value * denominator);
+          const error = Math.abs(value - numerator / denominator);
+          if (error < bestError) {
+            bestNumerator = numerator;
+            bestDenominator = denominator;
+            bestError = error;
+            if (error < tolerance) break;
+          }
+        }
+
+        const [simplifiedNum, simplifiedDen] = simplifyFraction(bestNumerator, bestDenominator);
+        if (simplifiedDen === 1) return simplifiedNum.toString();
+        return `<span class="fraction"><span class="numerator">${simplifiedNum}</span><span class="denominator">${simplifiedDen}</span></span>`;
+      }
+
       function calculate() {
         const s = document.getElementById('vertex').value;
         const p = document.getElementById('point').value;
@@ -85,6 +139,9 @@
 
         // Calculate a
         const a = (yp - k) / Math.pow(xp - h, 2);
+
+        // Format a as a fraction or decimal
+        const aFormatted = formatAsFractionOrDecimal(a);
 
         // Build the equation string
         let xpart;
@@ -108,8 +165,8 @@
         // Display results
         const resultDiv = document.getElementById('result');
         resultDiv.innerHTML =
-          `<span class="math">y = ${a}${xpart}${kend}</span>\n` +
-          `<span class="math">a = ${a}</span>\n` +
+          `<span class="math">y = ${aFormatted}${xpart}${kend}</span>\n` +
+          `<span class="math">a = ${aFormatted}</span>\n` +
           `<span class="math">h = ${h}</span>\n` +
           `<span class="math">k = ${k}</span>\n`;
       }
